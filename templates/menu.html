@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Cardápio</title>
+
+<style>
+
+body{
+font-family:Arial;
+padding:20px;
+background:#f5f5f5;
+}
+
+.item{
+background:white;
+padding:15px;
+margin-bottom:10px;
+border-radius:8px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+button{
+padding:6px 10px;
+border:none;
+background:#28a745;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+#cart{
+margin-top:20px;
+padding:15px;
+background:white;
+border-radius:8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Cardápio</h1>
+
+<div id="menu">
+
+{% for item in items %}
+
+<div class="item">
+
+<h3>{{ item.name }}</h3>
+
+<p>R$ {{ item.price }}</p>
+
+<button onclick="addToCart('{{ item.id }}','{{ item.name }}')">
+Adicionar
+</button>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div id="cart">
+
+<h2>Carrinho</h2>
+
+<ul id="cart-items"></ul>
+
+<p id="cart-count">Itens: 0</p>
+
+<button onclick="sendOrder()">Enviar Pedido</button>
+
+</div>
+
+<script>
+
+let cart = [];
+
+function addToCart(id,name){
+
+cart.push({id:id,name:name});
+
+updateCart();
+
+}
+
+function updateCart(){
+
+let list = document.getElementById("cart-items");
+
+list.innerHTML="";
+
+cart.forEach(item=>{
+let li=document.createElement("li");
+li.innerText=item.name;
+list.appendChild(li);
+});
+
+document.getElementById("cart-count").innerText="Itens: "+cart.length;
+
+}
+
+function sendOrder(){
+
+fetch("/create-order/",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"X-CSRFToken":"{{ csrf_token }}"
+},
+body:JSON.stringify({
+items:cart
+})
+})
+.then(()=>{
+
+alert("Pedido enviado!");
+
+cart=[];
+updateCart();
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

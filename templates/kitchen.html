@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Cozinha</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:20px;
+}
+
+.column{
+width:30%;
+float:left;
+margin-right:3%;
+}
+
+.order{
+background:white;
+padding:15px;
+margin-bottom:10px;
+border-radius:8px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+button{
+padding:6px 10px;
+border:none;
+background:#007bff;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+h2{
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Painel da Cozinha</h1>
+
+<div class="column">
+
+<h2>Novos</h2>
+
+{% for order in new_orders %}
+
+<div class="order">
+
+<h3>Pedido #{{ order.id }}</h3>
+
+<p>Mesa {{ order.table.number }}</p>
+
+<ul>
+
+{% for item in order.items.all %}
+
+<li>{{ item.quantity }}x {{ item.menu_item.name }}</li>
+
+{% endfor %}
+
+</ul>
+
+<p><strong>Total: R$ {{ order.get_total }}</strong></p>
+
+<form method="post" action="/update-order/{{ order.id }}/preparing/">
+{% csrf_token %}
+<button>Iniciar preparo</button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div class="column">
+
+<h2>Em preparo</h2>
+
+{% for order in preparing_orders %}
+
+<div class="order">
+
+<h3>Pedido #{{ order.id }}</h3>
+
+<p>Mesa {{ order.table.number }}</p>
+
+<ul>
+
+{% for item in order.items.all %}
+
+<li>{{ item.quantity }}x {{ item.menu_item.name }}</li>
+
+{% endfor %}
+
+</ul>
+
+<form method="post" action="/update-order/{{ order.id }}/ready/">
+{% csrf_token %}
+<button>Marcar pronto</button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div class="column">
+
+<h2>Prontos</h2>
+
+{% for order in ready_orders %}
+
+<div class="order">
+
+<h3>Pedido #{{ order.id }}</h3>
+
+<p>Mesa {{ order.table.number }}</p>
+
+<ul>
+
+{% for item in order.items.all %}
+
+<li>{{ item.quantity }}x {{ item.menu_item.name }}</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+
+</html>
